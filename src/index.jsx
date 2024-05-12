@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from "react-redux";
+import store from 'store';
 
 // scroll bar
 import 'simplebar-react/dist/simplebar.min.css';
@@ -34,8 +36,11 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 // ==============================|| MAIN - REACT DOM RENDER ||============================== //
-
-root.render(<App />);
+root.render(
+    <Provider store={store}>
+        <App />
+    </Provider>
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

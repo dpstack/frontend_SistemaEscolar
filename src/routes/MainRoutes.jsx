@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
+import PrivateRoute from 'components/PrivateRoute';
 
 const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const Typography = Loadable(lazy(() => import('pages/component-overview/typography')));
@@ -16,15 +17,15 @@ const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')))
 
 const MainRoutes = {
   path: '/',
-  element: <Dashboard />,
+  element: <PrivateRoute> <Dashboard /> </PrivateRoute>,
   children: [
     {
       path: '/',
-      element: <DashboardDefault />
+      element: <PrivateRoute> <DashboardDefault /> </PrivateRoute>
     },
     {
       path: 'color',
-      element: <Color />
+      element: <PrivateRoute> <Color /> </PrivateRoute>
     },
     {
       path: 'dashboard',

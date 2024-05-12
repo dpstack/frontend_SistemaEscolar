@@ -29,6 +29,9 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
+import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { logout } from 'contexts/auth-reducer/authActions';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -49,6 +52,15 @@ function a11yProps(index) {
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 export default function Profile() {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login', { replace: true });
+  };
+
   const theme = useTheme();
 
   const anchorRef = useRef(null);
@@ -91,7 +103,7 @@ export default function Profile() {
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="sm" />
           <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            John Doe
+            Daniel Pérez
           </Typography>
         </Stack>
       </ButtonBase>
@@ -124,16 +136,16 @@ export default function Profile() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
-                            <Typography variant="h6">John Doe</Typography>
+                            <Typography variant="h6">Daniel Pérez</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              UI/UX Designer
+                              Administrador
                             </Typography>
                           </Stack>
                         </Stack>
                       </Grid>
                       <Grid item>
-                        <Tooltip title="Logout">
-                          <IconButton size="large" sx={{ color: 'text.primary' }}>
+                        <Tooltip title="Cerrar Sesión">
+                          <IconButton size="large" onClick={handleLogout} sx={{ color: 'text.primary' }}>
                             <LogoutOutlined />
                           </IconButton>
                         </Tooltip>
@@ -152,7 +164,7 @@ export default function Profile() {
                           textTransform: 'capitalize'
                         }}
                         icon={<UserOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Profile"
+                        label="Perfil"
                         {...a11yProps(0)}
                       />
                       <Tab
@@ -164,7 +176,7 @@ export default function Profile() {
                           textTransform: 'capitalize'
                         }}
                         icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Setting"
+                        label="Configuración"
                         {...a11yProps(1)}
                       />
                     </Tabs>

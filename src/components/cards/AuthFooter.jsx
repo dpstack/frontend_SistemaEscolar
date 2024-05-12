@@ -16,9 +16,9 @@ export default function AuthFooter() {
         textAlign={{ xs: 'center', sm: 'inherit' }}
       >
         <Typography variant="subtitle2" color="secondary">
-          This site is protected by{' '}
+          Este sitio está protegido por{' '}
           <Typography component={Link} variant="subtitle2" href="#mantis-privacy" target="_blank" underline="hover">
-            Privacy Policy
+            Políticas de Privacidad
           </Typography>
         </Typography>
 
@@ -31,7 +31,7 @@ export default function AuthFooter() {
             target="_blank"
             underline="hover"
           >
-            Terms and Conditions
+            Términos y Condiciones
           </Typography>
           <Typography
             variant="subtitle2"
@@ -41,7 +41,7 @@ export default function AuthFooter() {
             target="_blank"
             underline="hover"
           >
-            Privacy Policy
+            Políticas de Privacidad
           </Typography>
           <Typography
             variant="subtitle2"
@@ -51,7 +51,7 @@ export default function AuthFooter() {
             target="_blank"
             underline="hover"
           >
-            CA Privacy Notice
+            Políticas de Cookies
           </Typography>
         </Stack>
       </Stack>

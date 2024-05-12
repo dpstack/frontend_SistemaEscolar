@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import config from 'config';
+import Swal from 'sweetalert2';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -26,12 +28,20 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
+import { FormControlLabel, MenuItem, Select, Switch } from '@mui/material';
 
 // ============================|| JWT - REGISTER ||============================ //
 
 export default function AuthRegister() {
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [estado, setEstado] = useState(true);
+  const navigate = useNavigate();
+
+  const handleChangeSwitch = (event) => {
+    setEstado(event.target.checked);
+  };
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -45,75 +55,121 @@ export default function AuthRegister() {
     setLevel(strengthColor(temp));
   };
 
+  const handleRegister = async (values, { setErrors }) => {
+    try {
+      const response = await fetch(`${config.apiUrl}/usuarios/registro`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...values,
+          estado: estado ? 'activo' : 'inactivo'
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        Swal.fire({
+          title: 'Éxito',
+          text: "Usuario registrado correctamente",
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        });
+        navigate('/login', { replace: true });
+      } else {
+        const error = await response.json();
+        setErrors(error);
+      }
+
+    } catch (error) {
+      setErrors({ submit: "Ocurrió un error al registrar el usuario" });
+      Swal.fire({
+        title: 'Error',
+        text: "Error al registrar usuario",
+        icon: 'error',
+        confirmButtonText: 'Aceptar'
+      });
+
+    }
+  }
+
   useEffect(() => {
     changePassword('');
+
+    fetch(`${config.apiUrl}/roles`)
+      .then(response => response.json())
+      .then(data => setRoles(data))
+      .catch((err) => console.error("Error al obtener roles", err));
   }, []);
 
   return (
     <>
       <Formik
         initialValues={{
-          firstname: '',
-          lastname: '',
-          email: '',
-          company: '',
-          password: '',
+          nombre: '',
+          apellido: '',
+          correo_electronico: '',
+          rol: '',
+          estado: 'activo',
+          contraseña: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          firstname: Yup.string().max(255).required('First Name is required'),
-          lastname: Yup.string().max(255).required('Last Name is required'),
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          nombre: Yup.string().max(255).required('El nombre es requerido'),
+          apellido: Yup.string().max(255).required('El apellido es requerido'),
+          correo_electronico: Yup.string().email('El correo debe ser válido').max(255).required('El correo es requerido'),
+          contraseña: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').max(255).required('La contraseña es obligatoria!'),
+          rol: Yup.string().max(255).required('El rol es requerido')
         })}
+        onSubmit={handleRegister}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="firstname-signup">First Name*</InputLabel>
+                  <InputLabel htmlFor="nombre-signup">Nombres</InputLabel>
                   <OutlinedInput
-                    id="firstname-login"
-                    type="firstname"
-                    value={values.firstname}
-                    name="firstname"
+                    id="nombre-login"
+                    type="nombre"
+                    value={values.nombre}
+                    name="nombre"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="John"
+                    placeholder="Francisco"
                     fullWidth
-                    error={Boolean(touched.firstname && errors.firstname)}
+                    error={Boolean(touched.nombre && errors.nombre)}
                   />
                 </Stack>
-                {touched.firstname && errors.firstname && (
-                  <FormHelperText error id="helper-text-firstname-signup">
-                    {errors.firstname}
+                {touched.nombre && errors.nombre && (
+                  <FormHelperText error id="helper-text-nombre-signup">
+                    {errors.nombre}
                   </FormHelperText>
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="lastname-signup">Last Name*</InputLabel>
+                  <InputLabel htmlFor="apellido-signup">Apellidos</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.lastname && errors.lastname)}
-                    id="lastname-signup"
-                    type="lastname"
-                    value={values.lastname}
-                    name="lastname"
+                    error={Boolean(touched.apellido && errors.apellido)}
+                    id="apellido-signup"
+                    type="apellido"
+                    value={values.apellido}
+                    name="apellido"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Doe"
+                    placeholder="Garcia"
                     inputProps={{}}
                   />
                 </Stack>
-                {touched.lastname && errors.lastname && (
-                  <FormHelperText error id="helper-text-lastname-signup">
-                    {errors.lastname}
+                {touched.apellido && errors.apellido && (
+                  <FormHelperText error id="helper-text-apellido-signup">
+                    {errors.apellido}
                   </FormHelperText>
                 )}
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="company-signup">Company</InputLabel>
                   <OutlinedInput
@@ -133,39 +189,70 @@ export default function AuthRegister() {
                     {errors.company}
                   </FormHelperText>
                 )}
+              </Grid> */}
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={<Switch checked={estado} onChange={handleChangeSwitch} />}
+                  label="Estado del Usuario"
+                />
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
-                  <OutlinedInput
+                  <InputLabel htmlFor="rol-signup">Rol</InputLabel>
+                  <Select
                     fullWidth
-                    error={Boolean(touched.email && errors.email)}
-                    id="email-login"
-                    type="email"
-                    value={values.email}
-                    name="email"
-                    onBlur={handleBlur}
+                    id="rol-signup"
+                    value={values.rol}
+                    name="rol"
                     onChange={handleChange}
-                    placeholder="demo@company.com"
-                    inputProps={{}}
-                  />
+                    error={Boolean(touched.rol && errors.rol)}
+                  >
+                    {/* <MenuItem value="">Seleccionar rol</MenuItem> */}
+                    {roles.map((rol) => (
+                      <MenuItem key={rol.id} value={rol.id}>
+                        {rol.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </Stack>
-                {touched.email && errors.email && (
-                  <FormHelperText error id="helper-text-email-signup">
-                    {errors.email}
+                {touched.rol && errors.rol && (
+                  <FormHelperText error id="helper-text-rol-signup">
+                    {errors.rol}
                   </FormHelperText>
                 )}
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password</InputLabel>
+                  <InputLabel htmlFor="correo_electronico-signup">Correo Electrónico</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.password && errors.password)}
-                    id="password-signup"
+                    error={Boolean(touched.correo_electronico && errors.correo_electronico)}
+                    id="correo_electronico-login"
+                    type="correo_electronico"
+                    value={values.correo_electronico}
+                    name="correo_electronico"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="test@gmail.com"
+                    inputProps={{}}
+                  />
+                </Stack>
+                {touched.correo_electronico && errors.correo_electronico && (
+                  <FormHelperText error id="helper-text-correo_electronico-signup">
+                    {errors.correo_electronico}
+                  </FormHelperText>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="contraseña-signup">Contraseña</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.contraseña && errors.contraseña)}
+                    id="contraseña-signup"
                     type={showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    name="password"
+                    value={values.contraseña}
+                    name="contraseña"
                     onBlur={handleBlur}
                     onChange={(e) => {
                       handleChange(e);
@@ -174,7 +261,7 @@ export default function AuthRegister() {
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
-                          aria-label="toggle password visibility"
+                          aria-label="toggle contraseña visibility"
                           onClick={handleClickShowPassword}
                           onMouseDown={handleMouseDownPassword}
                           edge="end"
@@ -184,13 +271,13 @@ export default function AuthRegister() {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="******"
+                    placeholder="*********"
                     inputProps={{}}
                   />
                 </Stack>
-                {touched.password && errors.password && (
-                  <FormHelperText error id="helper-text-password-signup">
-                    {errors.password}
+                {touched.contraseña && errors.contraseña && (
+                  <FormHelperText error id="helper-text-contraseña-signup">
+                    {errors.contraseña}
                   </FormHelperText>
                 )}
                 <FormControl fullWidth sx={{ mt: 2 }}>
@@ -208,13 +295,13 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body2">
-                  By Signing up, you agree to our &nbsp;
+                  Por registrarte, aceptas nuestros &nbsp;
                   <Link variant="subtitle2" component={RouterLink} to="#">
-                    Terms of Service
+                    Términos de servicio
                   </Link>
-                  &nbsp; and &nbsp;
+                  &nbsp; y &nbsp;
                   <Link variant="subtitle2" component={RouterLink} to="#">
-                    Privacy Policy
+                    Políticas de privacidad
                   </Link>
                 </Typography>
               </Grid>
@@ -226,7 +313,7 @@ export default function AuthRegister() {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Create Account
+                    Crear Cuenta
                   </Button>
                 </AnimateButton>
               </Grid>

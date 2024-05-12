@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import config from 'config';
+import Swal from 'sweetalert2';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -29,6 +31,12 @@ import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import FirebaseSocial from './FirebaseSocial';
 
+// Backend
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { login } from 'contexts/auth-reducer/authActions';
+
+
 // ============================|| JWT - LOGIN ||============================ //
 
 export default function AuthLogin({ isDemo = false }) {
@@ -43,6 +51,47 @@ export default function AuthLogin({ isDemo = false }) {
     event.preventDefault();
   };
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogin = async (values, { setErrors }) => {
+    try {
+      const response = await fetch(`${config.apiUrl}/usuarios/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          correo_electronico: values.email,
+          contraseña: values.password
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(login({ user: data.usuario }))
+        localStorage.setItem('token', data.token);
+        Swal.fire({
+          icon: 'success',
+          title: '¡Bienvenido!',
+          text: "Bienvenido a la aplicación!",
+        })
+        navigate('/', { replace: true });
+      } else {
+        const error = await response.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: "Usuario no existente!",
+        })
+        // setErrors(error);
+      }
+
+    } catch (error) {
+      console.log("Error al iniciar sesión: ", error);
+      setErrors({ submit: "Ocurrió un error al iniciar sesión" });
+    }
+  }
+
   return (
     <>
       <Formik
@@ -52,16 +101,17 @@ export default function AuthLogin({ isDemo = false }) {
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          email: Yup.string().email('El correo debe ser válido').max(255).required('El correo es obligatorio!'),
+          password: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').max(255).required('La contraseña es obligatoria!')
         })}
+        onSubmit={handleLogin}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-login">Email Address</InputLabel>
+                  <InputLabel htmlFor="email-login">Correo Electrónico</InputLabel>
                   <OutlinedInput
                     id="email-login"
                     type="email"
@@ -69,7 +119,7 @@ export default function AuthLogin({ isDemo = false }) {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter email address"
+                    placeholder="Ingresa un correo electrónico"
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
                   />
@@ -82,7 +132,7 @@ export default function AuthLogin({ isDemo = false }) {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-login">Password</InputLabel>
+                  <InputLabel htmlFor="password-login">Contraseña</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
@@ -105,7 +155,7 @@ export default function AuthLogin({ isDemo = false }) {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="Enter password"
+                    placeholder="Ingresa una contraseña"
                   />
                 </Stack>
                 {touched.password && errors.password && (
@@ -127,10 +177,10 @@ export default function AuthLogin({ isDemo = false }) {
                         size="small"
                       />
                     }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
+                    label={<Typography variant="h6">Permanecer registrado</Typography>}
                   />
                   <Link variant="h6" component={RouterLink} color="text.primary">
-                    Forgot Password?
+                    ¿Olvidaste tu contraseña?
                   </Link>
                 </Stack>
               </Grid>
@@ -142,13 +192,13 @@ export default function AuthLogin({ isDemo = false }) {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Login
+                    Ingresar
                   </Button>
                 </AnimateButton>
               </Grid>
               <Grid item xs={12}>
                 <Divider>
-                  <Typography variant="caption"> Login with</Typography>
+                  <Typography variant="caption"> Ingresar con</Typography>
                 </Divider>
               </Grid>
               <Grid item xs={12}>

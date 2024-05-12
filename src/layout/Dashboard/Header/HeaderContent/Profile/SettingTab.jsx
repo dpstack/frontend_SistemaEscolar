@@ -23,19 +23,19 @@ export default function SettingTab() {
         <ListItemIcon>
           <QuestionCircleOutlined />
         </ListItemIcon>
-        <ListItemText primary="Support" />
+        <ListItemText primary="Soporte" />
       </ListItemButton>
       <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
         <ListItemIcon>
           <UserOutlined />
         </ListItemIcon>
-        <ListItemText primary="Account Settings" />
+        <ListItemText primary="Configuración de Cuenta" />
       </ListItemButton>
       <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
         <ListItemIcon>
           <LockOutlined />
         </ListItemIcon>
-        <ListItemText primary="Privacy Center" />
+        <ListItemText primary="Centro de Privacidad" />
       </ListItemButton>
       <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3)}>
         <ListItemIcon>
@@ -47,7 +47,7 @@ export default function SettingTab() {
         <ListItemIcon>
           <UnorderedListOutlined />
         </ListItemIcon>
-        <ListItemText primary="History" />
+        <ListItemText primary="Historial" />
       </ListItemButton>
     </List>
   );

@@ -11,24 +11,24 @@ const icons = {
 
 const pages = {
   id: 'authentication',
-  title: 'Authentication',
+  title: 'Autenticación',
   type: 'group',
   children: [
     {
       id: 'login1',
-      title: 'Login',
+      title: 'Inicio de sesión',
       type: 'item',
       url: '/login',
       icon: icons.LoginOutlined,
-      target: true
+      target: false
     },
     {
       id: 'register1',
-      title: 'Register',
+      title: 'Registro',
       type: 'item',
       url: '/register',
       icon: icons.ProfileOutlined,
-      target: true
+      target: false
     }
   ]
 };
