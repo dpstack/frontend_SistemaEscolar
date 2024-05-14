@@ -15,3 +15,18 @@ export const isAuthenticated = async () => {
         return false;
     }
 };
+
+export const getDataAuth = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${config.apiUrl}/usuarios/perfil`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        return false;
+    }
+}

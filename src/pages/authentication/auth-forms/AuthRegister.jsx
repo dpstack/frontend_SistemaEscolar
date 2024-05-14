@@ -56,6 +56,7 @@ export default function AuthRegister() {
   };
 
   const handleRegister = async (values, { setErrors }) => {
+    console.log(values);
     try {
       const response = await fetch(`${config.apiUrl}/usuarios/registro`, {
         method: 'POST',
@@ -67,8 +68,10 @@ export default function AuthRegister() {
           estado: estado ? 'activo' : 'inactivo'
         })
       });
+      const data = await response.json();
+      console.log(data);
+
       if (response.ok) {
-        const data = await response.json();
         Swal.fire({
           title: 'Éxito',
           text: "Usuario registrado correctamente",
@@ -109,7 +112,7 @@ export default function AuthRegister() {
           nombre: '',
           apellido: '',
           correo_electronico: '',
-          rol: '',
+          rol_id: '',
           estado: 'activo',
           contraseña: '',
           submit: null
@@ -119,7 +122,7 @@ export default function AuthRegister() {
           apellido: Yup.string().max(255).required('El apellido es requerido'),
           correo_electronico: Yup.string().email('El correo debe ser válido').max(255).required('El correo es requerido'),
           contraseña: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').max(255).required('La contraseña es obligatoria!'),
-          rol: Yup.string().max(255).required('El rol es requerido')
+          rol_id: Yup.string().max(255).required('El rol es requerido')
         })}
         onSubmit={handleRegister}
       >
@@ -202,22 +205,22 @@ export default function AuthRegister() {
                   <Select
                     fullWidth
                     id="rol-signup"
-                    value={values.rol}
-                    name="rol"
+                    value={values.rol_id}
+                    name="rol_id"
                     onChange={handleChange}
-                    error={Boolean(touched.rol && errors.rol)}
+                    error={Boolean(touched.rol_id && errors.rol_id)}
                   >
                     {/* <MenuItem value="">Seleccionar rol</MenuItem> */}
-                    {roles.map((rol) => (
-                      <MenuItem key={rol.id} value={rol.id}>
-                        {rol.nombre}
+                    {roles.map((rol_id) => (
+                      <MenuItem key={rol_id.id} value={rol_id.id}>
+                        {rol_id.nombre}
                       </MenuItem>
                     ))}
                   </Select>
                 </Stack>
-                {touched.rol && errors.rol && (
+                {touched.rol_id && errors.rol_id && (
                   <FormHelperText error id="helper-text-rol-signup">
-                    {errors.rol}
+                    {errors.rol_id}
                   </FormHelperText>
                 )}
               </Grid>

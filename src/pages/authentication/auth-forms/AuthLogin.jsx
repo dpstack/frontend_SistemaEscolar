@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import config from 'config';
 import Swal from 'sweetalert2';
@@ -35,6 +35,8 @@ import FirebaseSocial from './FirebaseSocial';
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from 'contexts/auth-reducer/authActions';
+import { UserContext } from 'contexts/UserContext';
+import { getDataAuth } from 'utils/auth';
 
 
 // ============================|| JWT - LOGIN ||============================ //
@@ -53,6 +55,7 @@ export default function AuthLogin({ isDemo = false }) {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
 
   const handleLogin = async (values, { setErrors }) => {
     try {
@@ -70,6 +73,8 @@ export default function AuthLogin({ isDemo = false }) {
         const data = await response.json();
         dispatch(login({ user: data.usuario }))
         localStorage.setItem('token', data.token);
+        const userLogged = await getDataAuth();
+        setUser(userLogged);
         Swal.fire({
           icon: 'success',
           title: '¡Bienvenido!',

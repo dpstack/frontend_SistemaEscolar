@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -32,6 +32,7 @@ import avatar1 from 'assets/images/users/avatar-1.png';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { logout } from 'contexts/auth-reducer/authActions';
+import { UserContext } from 'contexts/UserContext';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -53,11 +54,20 @@ function a11yProps(index) {
 
 export default function Profile() {
 
+  const { user, setUser } = useContext(UserContext);
+
+  const [usuarioActual, setUsuarioActual] = useState(null);
+
+  useEffect(() => {
+    setUsuarioActual(user);
+  }, [user])
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logout());
+    setUser(null);
     navigate('/login', { replace: true });
   };
 
@@ -102,9 +112,12 @@ export default function Profile() {
       >
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="sm" />
-          <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            Daniel Pérez
-          </Typography>
+          {usuarioActual && (
+            <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
+              {usuarioActual.nombre}
+            </Typography>
+          )
+          }
         </Stack>
       </ButtonBase>
       <Popper
@@ -136,10 +149,14 @@ export default function Profile() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
-                            <Typography variant="h6">Daniel Pérez</Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              Administrador
-                            </Typography>
+                            {usuarioActual && (
+                              <Typography variant="h6">{usuarioActual.nombre}</Typography>
+                            )}
+                            {usuarioActual && (
+                              <Typography variant="body2" color="text.secondary">
+                                {usuarioActual.rol}
+                              </Typography>
+                            )}
                           </Stack>
                         </Stack>
                       </Grid>
