@@ -1,5 +1,5 @@
 const permisos = {
-    'administrador': [
+    'Administrador': [
         'gestionUsuarios',
         'gestionCursos',
         'gestionHorarios',
@@ -8,7 +8,7 @@ const permisos = {
         'configuracionSistema',
         'accesoCompleto'
     ],
-    'secretario': [
+    'Secretario': [
         'matriculaAlumnos',
         'gestionExpedientes',
         'gestionAsistencia',
@@ -16,20 +16,20 @@ const permisos = {
         'gestionPagos',
         'reportesBasicos'
     ],
-    'profesor': [
+    'Profesor': [
         'gestionCursosPropio',
         'registroCalificaciones',
         'monitoreoAsistencia',
         'comunicacionAlumnosPadres',
         'accesoDatosAlumnos'
     ],
-    'alumno': [
+    'Alumno': [
         'verDatosAcademicos',
         'accederMaterial',
-        'comunicacionProfesoresCompanieros',
+        'comunicacionProfesoresCompañeros',
         'verCalendario'
     ],
-    'padre': [
+    'Tutor': [
         'monitoreoProgresoHijo',
         'comunicacionProfesores',
         'verCalendario',
@@ -38,5 +38,6 @@ const permisos = {
 };
 
 export const hasPermission = (rol, permiso) => {
+    console.log(rol, permiso);
     return permisos[rol].includes(permiso) && permisos[rol];
 }

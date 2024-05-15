@@ -25,7 +25,8 @@ const MainRoutes = {
     },
     {
       path: 'color',
-      element: <PrivateRoute> <Color /> </PrivateRoute>
+      // element: <PrivateRoute> <Color /> </PrivateRoute>
+      element: <Color />
     },
     {
       path: 'dashboard',
